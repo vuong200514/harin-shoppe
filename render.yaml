@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: harin-studios-shopee
+    runtime: docker
+    plan: free
+    region: singapore
+    healthCheckPath: /health
+    envVars:
+      - key: ACCESS_USER
+        value: harin
+      - key: ACCESS_PASSWORD
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_UPLOAD_PRESET
+        sync: false

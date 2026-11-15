@@ -1,0 +1,15 @@
+HARIN STUDIOS - DOCKER + RENDER
+==============================
+
+1. MO README.md de xem huong dan day du tieng Viet.
+2. Tao CLOUDINARY Cloud name + Unsigned upload preset.
+3. Day thu muc nay len GitHub repo rieng.
+4. Render -> New -> Web Service -> repo -> Docker.
+5. Environment: CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET,
+   ACCESS_USER=harin, ACCESS_PASSWORD=mat khau ban tu dat.
+6. Deploy xong mo link Render, dang nhap, chon anh tu may.
+7. Anh se tu upload Cloudinary, lay URL HTTPS, dien vao Excel.
+
+Can giu mat khau web, KHONG cung cap API SECRET cho frontend.
+
+Render Free co the tam dung sau 15 phut khong co request.

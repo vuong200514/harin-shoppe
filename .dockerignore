@@ -1,0 +1,8 @@
+.git
+.env
+*.zip
+*.pdf
+*.xlsx
+*.xls
+*.log
+node_modules

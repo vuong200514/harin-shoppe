@@ -1,0 +1,12 @@
+services:
+  harin-shopee:
+    build: .
+    ports:
+      - "10000:10000"
+    environment:
+      PORT: "10000"
+      ACCESS_USER: "${ACCESS_USER:-harin}"
+      ACCESS_PASSWORD: "${ACCESS_PASSWORD:-}"
+      CLOUDINARY_CLOUD_NAME: "${CLOUDINARY_CLOUD_NAME:-}"
+      CLOUDINARY_UPLOAD_PRESET: "${CLOUDINARY_UPLOAD_PRESET:-}"
+    restart: unless-stopped
