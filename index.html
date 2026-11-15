@@ -43,6 +43,22 @@
     .size-choice input{accent-color:#cb6d5d;width:17px;height:17px}.size-menu-foot{display:flex;align-items:center;justify-content:space-between;gap:9px;padding:8px 5px 2px;color:var(--muted);font-size:11px}
     .size-all{border:0;background:#fae9e4;color:#964638;padding:7px 10px;border-radius:8px;font-weight:800;font-size:11px}
     .chart-note{margin-top:9px;font-size:11px;color:#327e63}
+
+    /* Keep suggestions visible beyond the first section's rounded card boundary. */
+    .panel.section:has(.category-menu:not(.hidden)){overflow:visible;position:relative;z-index:30}
+    /* Live category autocomplete, accent-insensitive with authentic Shopee IDs. */
+    .category-field{position:relative}.category-input-wrap{position:relative}.category-input-wrap #itemCategory{padding-left:38px;padding-right:16px}
+    .category-search-icon{position:absolute;top:8px;left:13px;color:#ae9588;font-size:25px;z-index:1;line-height:1}
+    .category-menu{position:absolute;z-index:25;top:calc(100% + 6px);left:0;right:0;max-height:410px;overflow-y:auto;background:#fff;border:1px solid #e8dcd3;border-radius:14px;box-shadow:0 22px 42px #4f291b36;padding:7px;overscroll-behavior:contain}
+    .category-menu-head{padding:9px 10px;font-size:11px;color:#8d776c;display:flex;align-items:center;justify-content:space-between;gap:8px}
+    .category-result{width:100%;text-align:left;display:flex;align-items:center;gap:12px;border:1px solid transparent;border-radius:10px;background:white;padding:10px 11px;cursor:pointer;color:#312b27}
+    .category-result:hover,.category-result.active{background:#fff0eb;border-color:#f5d9cd}.category-result-text{flex:1;min-width:0;display:grid;gap:3px}
+    .category-result-path{font-size:12px;line-height:1.55;overflow-wrap:anywhere}.category-result-path b{font-weight:800}.category-result-path mark{background:#ffe0ad;border-radius:3px;padding:0 1px;color:inherit}
+    .category-result-sub{font-size:10px;color:#93877f}.category-result-id{font:600 10px ui-monospace,Consolas,monospace;color:#9d7061;flex:none;background:#faf1eb;padding:5px 7px;border-radius:7px}
+    .category-root{width:100%;border:0;background:transparent;text-align:left;padding:9px 11px;border-radius:8px;font-weight:650;color:#57443a}.category-root:hover,.category-root:focus-visible{background:#fff0eb}
+    .category-chosen{font-size:11px;font-weight:750;color:#8f8a83}.category-chosen.filled{color:#168b65}.category-empty{padding:15px 10px;color:#827268;font-size:12px}
+    .category-menu::-webkit-scrollbar{width:8px}.category-menu::-webkit-scrollbar-thumb{background:#ead4ca;border-radius:20px}
+    @media(max-width:700px){.category-menu{max-height:330px}.category-result{padding:9px}.category-result-id{font-size:9px}}
 </style>
 </head>
 <body>
@@ -61,8 +77,13 @@
     <section class="panel section"><div class="section-head"><h2>01 · Thông tin sản phẩm</h2><span id="productIndex">Sản phẩm 01</span></div><div class="section-body">
       <div class="field" style="margin-bottom:17px"><label for="itemName">Tên sản phẩm <span style="color:var(--accent)">*</span></label><div class="field-join"><span>𝙝𝙖𝙧𝙞𝙣.𝙨𝙩𝙪𝙙𝙞𝙤𝙨</span><input id="itemName" placeholder="Áo thun nữ form rộng cổ tròn..." maxlength="105"></div><div class="hint">Tên luôn tự có tiền tố 𝙝𝙖𝙧𝙞𝙣.𝙨𝙩𝙪𝙙𝙞𝙤𝙨 phía trước.</div></div>
       <div class="grid-2">
-        <div class="field"><label for="itemCategory">Ngành hàng Shopee <span style="color:var(--accent)">*</span></label><select id="itemCategory"><option value="">Chọn ngành hàng...</option></select><div class="hint">Danh sách thời trang nữ theo mẫu 100017 bạn gửi.</div></div>
-        <div class="field" id="basicCategoryBox" style="display:none"><label for="basicCategory">Mã ngành hàng (mẫu cơ bản)</label><input id="basicCategory" inputmode="numeric" placeholder="VD: 100352"></div>
+        <div class="field category-field" id="categoryField"><label for="itemCategory">Ngành hàng Shopee <span style="color:var(--accent)">*</span></label>
+          <div class="category-input-wrap"><span class="category-search-icon" aria-hidden="true">⌕</span><input id="itemCategory" type="search" role="combobox" autocomplete="off" aria-autocomplete="list" aria-controls="categoryResults" aria-expanded="false" placeholder="Gõ nam, áo thun, dien thoai..." spellcheck="false">
+            <div id="categoryResults" class="category-menu hidden" role="listbox" aria-label="Gợi ý ngành hàng Shopee"></div>
+          </div>
+          <div id="categoryChosen" class="category-chosen" aria-live="polite">Chưa chọn ngành hàng</div>
+          <div class="hint">Gợi ý ngay khi gõ · tìm không dấu · tra cứu <strong id="categoryTotal">1.813</strong> ngành hàng kèm ID từ mẫu Shopee bạn cung cấp.</div>
+        </div>
         <div class="field"><label for="itemPrice">Giá bán (VNĐ) <span style="color:var(--accent)">*</span></label><input id="itemPrice" type="number" min="1000" max="120000000" step="1000" placeholder="Ví dụ: 129000"></div>
       </div>
       <details style="margin-top:14px;background:#fcfaf8;padding:12px 14px;border-radius:11px;border:1px solid var(--line)">
@@ -116,11 +137,11 @@
       <div id="uploadProgress" class="fine" style="margin-top:10px"></div>
       <div class="warning">Ảnh tải lên Cloudinary sẽ có <strong>URL công khai</strong>. Tài khoản Cloudinary chịu dung lượng ảnh. Không nhập API Secret vào web, và nên bảo vệ web bằng mật khẩu ACCESS_PASSWORD trên Render.</div>
     </div></section>
-    <section class="panel section"><div class="section-head"><h2>06 · File xuất ra</h2></div><div class="section-body"><div class="field"><label for="formatType">Mẫu Shopee</label><select id="formatType"><option value="advanced">Mẫu Thời trang nữ 100017 (có cột Thương hiệu)</option><option value="basic">Mẫu cơ bản (không có cột Thương hiệu)</option></select></div><div id="basicWarning" class="warning hidden">Mẫu cơ bản không có cột Thương hiệu. Để đảm bảo No Brand được điền trong Excel, hãy dùng mẫu Thời trang nữ 100017.</div><div class="row" style="margin-top:15px;flex-wrap:wrap"><button class="btn primary" id="exportBottom">↓ Tạo file XLSX</button><button class="btn" id="zipBottom">↓ XLSX + ảnh (ZIP)</button></div><div id="exportStatus" class="fine" style="margin-top:10px">File Excel được tạo trên trình duyệt của bạn. Ảnh gửi trực tiếp từ trình duyệt tới Cloudinary, không lưu trên Render. Thiếu URL ảnh sẽ được cảnh báo trước khi xuất.</div></div></section>
+    <section class="panel section"><div class="section-head"><h2>06 · File xuất ra</h2></div><div class="section-body"><div class="field"><label for="formatType">Mẫu Shopee</label><select id="formatType"><option value="advanced">Mẫu Thời trang nữ 100017 (có cột Thương hiệu)</option><option value="basic">Mẫu cơ bản đa ngành hàng (không có cột Thương hiệu)</option></select></div><div id="basicWarning" class="warning hidden">Mẫu cơ bản cho nhiều ngành hàng không có cột Thương hiệu. Web không thể tự điền No Brand ở mẫu này; bạn có thể cần xác nhận thương hiệu trong Kênh Người Bán. Mẫu nâng cao 100017 chỉ dành cho Thời Trang Nữ.</div><div class="row" style="margin-top:15px;flex-wrap:wrap"><button class="btn primary" id="exportBottom">↓ Tạo file XLSX</button><button class="btn" id="zipBottom">↓ XLSX + ảnh (ZIP)</button></div><div id="exportStatus" class="fine" style="margin-top:10px">File Excel được tạo trên trình duyệt của bạn. Ảnh gửi trực tiếp từ trình duyệt tới Cloudinary, không lưu trên Render. Thiếu URL ảnh sẽ được cảnh báo trước khi xuất.</div></div></section>
     <div class="footer-note">Made for harin.studios · Docker / Render · Excel dựa trên biểu mẫu Shopee người dùng cung cấp</div>
   </main>
   <aside class="right">
-    <section class="panel"><div class="panel-pad"><div class="kicker">LIVE PREVIEW</div><h3>Xem trước bài đăng</h3><div class="summary-label">Tên hiển thị trên Shopee</div><div id="previewTitle" class="preview-title"></div><div class="divider"></div><div class="metric-list"><div class="metric"><span class="muted">Giá bán</span><strong id="previewPrice">Chưa nhập</strong></div><div class="metric"><span class="muted">Số phân loại</span><strong id="previewVariants">3 size</strong></div><div class="metric"><span class="muted">Tồn kho</span><strong id="previewStock">150</strong></div><div class="metric"><span class="muted">Ảnh có URL</span><strong id="previewImages">0 / 0</strong></div><div class="metric"><span class="muted">Thương hiệu</span><strong>No Brand</strong></div></div></div></section>
+    <section class="panel"><div class="panel-pad"><div class="kicker">LIVE PREVIEW</div><h3>Xem trước bài đăng</h3><div class="summary-label">Tên hiển thị trên Shopee</div><div id="previewTitle" class="preview-title"></div><div class="divider"></div><div class="metric-list"><div class="metric"><span class="muted">Giá bán</span><strong id="previewPrice">Chưa nhập</strong></div><div class="metric"><span class="muted">Số phân loại</span><strong id="previewVariants">3 size</strong></div><div class="metric"><span class="muted">Tồn kho</span><strong id="previewStock">150</strong></div><div class="metric"><span class="muted">Ảnh có URL</span><strong id="previewImages">0 / 0</strong></div><div class="metric"><span class="muted">Thương hiệu</span><strong id="previewBrand">No Brand</strong></div></div></div></section>
     <section class="panel"><div class="panel-pad"><div class="kicker">MÔ TẢ MẶC ĐỊNH</div><h3>Đã viết sẵn cho shop</h3><div id="descriptionPreview" class="preview-desc"></div><div class="fine" style="margin-top:12px">Mọi sản phẩm đều dùng nguyên văn nội dung này.</div></div></section>
     <section class="panel"><div class="panel-pad"><div class="kicker">CHECKLIST</div><h3>Trước khi xuất file</h3><div id="checklist"></div></div></section>
   </aside>

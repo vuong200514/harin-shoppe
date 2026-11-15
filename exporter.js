@@ -123,7 +123,9 @@ Cảm ơn bạn đã lựa chọn 𝒉𝒂𝒓𝒊𝒏.𝒔𝒕𝒖𝒅𝒊𝒐�
     for (let i=0;i<products.length;i++) {
       const p=products[i],tag=`Sản phẩm ${i+1}`;
       if (!p.name||!p.name.trim())errors.push(`${tag}: chưa nhập tên.`);
-      if (!/^\d+$/.test(String(p.category||'')))errors.push(`${tag}: chưa chọn mã ngành hàng.`);
+      const cat=(root.SHOPEE_CATEGORIES||[]).find(c=>String(c.id)===String(p.category||''));
+      if (!cat)errors.push(`${tag}: chưa chọn ngành hàng từ danh sách Shopee.`);
+      else if (format==='advanced'&&!cat.advanced)errors.push(`${tag}: ${cat.name} không nằm trong mẫu nâng cao 100017. Hãy đổi sang mẫu cơ bản.`);
       if (!Number.isFinite(Number(p.price))||Number(p.price)<1000||Number(p.price)>120000000)errors.push(`${tag}: giá phải trong khoảng 1.000 – 120.000.000đ.`);
       if (fullTitle(p.name).length>120)errors.push(`${tag}: tên đầy đủ vượt 120 ký tự.`);
       if (p.hasSizes && !normalizeSizes(p.sizes).length)errors.push(`${tag}: thiếu danh sách kích cỡ.`);

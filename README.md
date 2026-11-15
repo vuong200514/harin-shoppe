@@ -1,3 +1,29 @@
+# Harin Studios V3 - Tìm ngành hàng tức thì, có dấu/không dấu
+
+**Nguồn:** Đã trích xuất 1.813 mã ngành hàng lá thuộc 27 nhóm từ sheet `Phạm vi ngày chuẩn bị hàng` của file `Shopee_mass_upload_2026-11-15_basic_template.xlsx` (2026-11-15) do chủ shop cung cấp. 76 ngành Thời Trang Nữ dùng được mẫu nâng cao `100017` đã được đối chiếu với file `Shopee_mass_upload_2026-11-15_100017.xlsx`. Đây là danh sách đóng gói theo thời điểm tải mẫu, không phải API cập nhật realtime.
+
+**Tìm kiếm ngành hàng:** Trong mục 01, bấm vào ô Ngành hàng Shopee và gõ `nam`, `ao thun nam`, `dien thoai`, `mẹ bé`... Gợi ý xuất hiện ngay bên dưới, tìm **không phân biệt dấu tiếng Việt / chữ hoa thường** kể cả `đ` → `d`, tìm xuyên qua toàn bộ đường dẫn cấp 1–3+ và có ID chính xác. Sử dụng ↑/↓/Enter hoặc nhấp chuột để chọn; phải chọn một gợi ý, gõ tay mà chưa chọn không được xem là đã chọn.
+
+**Mẫu Excel:** Khi chọn ngành **ngoài Thời Trang Nữ**, web tự chuyển sang `Mẫu cơ bản`, vì mẫu nâng cao `100017` chỉ dùng cho Thời Trang Nữ. Khi chọn nữ và muốn có No Brand ở cột AL, chọn mẫu nâng cao. Mẫu cơ bản **không có cột thương hiệu**, nên không thể khẳng định No Brand được điền sẵn cho các ngành khác: phải kiểm tra khi tải lên Shopee. Không tự thêm thuộc tính ngành hàng khác vào template nữ.
+
+**Quan trọng:** Tên và ID được trích từ file Shopee chủ shop tải về, nhưng vẫn cần thử đăng một sản phẩm để xác nhận các ID/thuộc tính và cấu trúc file còn được Shopee hiện tại chấp nhận.
+
+## Nâng cấp trên Render đang dùng
+
+1. Giải nén bản V3; sao chép **nội dung** thư mục `harin_render_docker_v3` vào `D:\Code\harin_render_docker`, ghi đè file cũ và **không xóa `.git`**.
+2. Chạy PowerShell:
+
+```powershell
+cd "D:\Code\harin_render_docker"
+git add .
+git commit -m "Harin V3 category live search 1813 Shopee IDs"
+git push origin main
+```
+
+3. Render Auto Deploy hoặc chọn Manual Deploy > Deploy latest commit. Sau đó Ctrl+Shift+R.
+
+---
+
 # Harin Studios - Shopee Bulk Upload (Docker + Render)
 
 Trang web quan ly danh sach san pham, chon anh tu may tinh, **tu dong upload anh len Cloudinary va lay HTTPS URL**, sau do xuat file XLSX theo mau Shopee (cung cap boi chu shop).
