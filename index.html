@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#fff7f3">
-  <title>Harin Studios · Tạo file Shopee hàng loạt</title>
+  <title>Harin Studios V4 · Tạo file Shopee hàng loạt</title>
   <style>
     :root{--bg:#faf8f5;--paper:#fff;--ink:#302d2b;--muted:#898581;--line:#eee8e2;--accent:#e66a53;--accent-dark:#d25440;--accent-pale:#fff0eb;--green:#168b65;--green-pale:#e9f8f0;--shadow:0 12px 32px rgba(55,35,27,.05)}
     *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,"Segoe UI",Arial,sans-serif;font-size:14px;line-height:1.48}button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{opacity:.55;cursor:not-allowed}input,select,textarea{outline:0;color:var(--ink)}input:focus,select:focus,textarea:focus{border-color:#ed9c8e!important;box-shadow:0 0 0 3px #edab9930}.hidden{display:none!important}
@@ -38,7 +38,7 @@
     .size-multi{position:relative}.size-trigger{width:100%;min-height:44px;border:1px solid #e7dfd8;background:white;border-radius:11px;display:flex;align-items:center;justify-content:space-between;padding:9px 13px;text-align:left;gap:9px}
     .size-trigger:hover{border-color:#dcbaa9}.size-trigger[aria-expanded=true]{border-color:#d58f7e;box-shadow:0 0 0 3px #edab9930}
     .size-tags{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.size-tag{background:#fae8e3;border:1px solid #f1cfc5;padding:3px 9px;border-radius:8px;color:#973f33;font-weight:800;font-size:12px}.size-arrow{color:#96887e;font-size:16px}
-    .size-menu{position:absolute;z-index:12;left:0;right:0;top:calc(100% + 6px);background:white;border:1px solid #e7dfd8;box-shadow:0 15px 35px #50311e26;border-radius:12px;padding:8px}
+    .size-menu{position:static;width:100%;margin-top:8px;background:white;border:1px solid #e7dfd8;box-shadow:0 9px 22px #50311e1d;border-radius:12px;padding:8px;overflow:visible;max-height:none}
     .size-choice{display:flex;align-items:center;justify-content:space-between;padding:11px 12px;cursor:pointer;border-radius:9px;border:1px solid transparent;margin-bottom:4px}.size-choice:hover{background:#faf6f3}.size-choice.selected{background:#fceae5;border-color:#efd0c6;color:#a44438;font-weight:800}
     .size-choice input{accent-color:#cb6d5d;width:17px;height:17px}.size-menu-foot{display:flex;align-items:center;justify-content:space-between;gap:9px;padding:8px 5px 2px;color:var(--muted);font-size:11px}
     .size-all{border:0;background:#fae9e4;color:#964638;padding:7px 10px;border-radius:8px;font-weight:800;font-size:11px}
@@ -59,6 +59,13 @@
     .category-chosen{font-size:11px;font-weight:750;color:#8f8a83}.category-chosen.filled{color:#168b65}.category-empty{padding:15px 10px;color:#827268;font-size:12px}
     .category-menu::-webkit-scrollbar{width:8px}.category-menu::-webkit-scrollbar-thumb{background:#ead4ca;border-radius:20px}
     @media(max-width:700px){.category-menu{max-height:330px}.category-result{padding:9px}.category-result-id{font-size:9px}}
+
+    .upload-inline{margin-top:16px;padding:13px 15px;background:var(--green-pale);border:1px solid #cfe8dd;border-radius:12px;color:#287554}
+    .upload-status-line{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:12px;font-weight:800}
+    .upload-inline .fine{margin-top:7px;color:#477d68;overflow-wrap:anywhere}
+    .upload-inline.has-error{border-color:#f0c8b3;background:#fff8f1;color:#ad513b}
+    .upload-inline.has-error .fine{color:#9f674d}
+    .image-actions{flex-wrap:wrap}.image-actions .wait-dot{overflow-wrap:anywhere;font-size:10px}
 </style>
 </head>
 <body>
@@ -108,8 +115,10 @@
     <section class="panel section"><div class="section-head"><h2>02 · Ảnh sản phẩm từ máy</h2><span>Tối đa 9 ảnh / sản phẩm</span></div><div class="section-body">
       <div class="upload-box" id="imageDrop" role="button" tabindex="0"><div class="upload-emoji">▧</div><strong>Nhấp hoặc kéo ảnh vào đây</strong><span>JPG / PNG / WebP · tự xử lý ảnh quá 2MB · ảnh đầu tiên là ảnh bìa</span></div><input class="hidden" id="imageFile" type="file" accept="image/jpeg,image/png,image/webp" multiple>
       <div class="images" id="imageGrid"></div>
-      <details style="margin-top:16px"><summary style="cursor:pointer;font-weight:750;font-size:12px;color:#655b55">Hoặc thêm URL ảnh đã đăng lên mạng</summary><div class="field" style="margin-top:12px"><textarea id="imageUrls" placeholder="Mỗi dòng một URL ảnh https://..."></textarea><button class="btn soft small" id="appendUrls" style="align-self:flex-start">＋ Thêm URL ảnh</button></div></details>
-      <div class="callout">☁ <strong>Tự động upload:</strong> Cấu hình Cloudinary một lần ở mục 05 hoặc trên Render. Từ lần sau cứ chọn ảnh từ máy, web tự tải lên và điền URL vào Excel. Trạng thái từng ảnh sẽ hiển thị ở đây. Nếu ảnh lỗi, dùng nút tải lại tại mục 05.</div>
+      <div class="upload-inline" id="uploadInline" aria-live="polite">
+        <div class="upload-status-line"><span id="cloudReadyStatus">☁ Đang kết nối kho ảnh…</span><button type="button" class="btn small soft hidden" id="uploadAll">↻ Tải lại ảnh lỗi</button></div>
+        <div id="uploadProgress" class="fine" role="status">Chọn ảnh ở phía trên, web sẽ tự tải lên Cloudinary và lấy URL HTTPS.</div>
+      </div>
     </div></section>
     <section class="panel section"><div class="section-head"><h2>03 · Thiết lập shop</h2><span>Giá trị mặc định · có thể chỉnh sửa</span></div><div class="section-body">
       <div class="constant-grid"><div class="constant"><div class="label">Thương hiệu</div><div class="value" style="font-size:17px">No Brand</div></div><div class="constant"><label class="label" for="stockInput">T&#7891;n kho / size</label><input id="stockInput" class="editable-stock" type="number" inputmode="numeric" step="1" min="0" max="999999" value="50"><div class="stock-note">M&#7863;c &#273;&#7883;nh 50, ch&#7881;nh cho s&#7843;n ph&#7849;m &#273;ang ch&#7885;n</div></div><div class="constant"><div class="label">Cân nặng</div><div class="value">500 g</div></div><div class="constant"><div class="label">Dài × Rộng × Cao</div><div class="value" style="font-size:18px">15 × 20 × 5</div><div class="label">cm</div></div></div>
@@ -130,14 +139,7 @@
         <div class="radio-row"><input type="radio" id="chartImage" name="chartMode" value="image" checked><label for="chartImage"><strong>Dùng đúng ảnh bảng S/M/L này</strong><span class="fine" style="display:block">Cần URL ảnh sau khi tải lên.</span></label></div>
       </div>
     </div><div class="grid-2" style="margin-top:14px"><div class="field" id="chartGroupBox" style="display:none"><label for="chartGroup">Bảng có sẵn</label><select id="chartGroup"><option value="top">Áo — ID 1204838133</option><option value="bottom">Quần / Váy — ID 1504827701</option></select></div><div class="field" id="chartUrlBox"><label for="chartUrl">URL ảnh bảng size</label><input type="url" id="chartUrl" value="https://res.cloudinary.com/p8nrkuot/image/upload/v1794772267/bang_quy_doi_kich_co_harin_studios.png" placeholder="https://res.cloudinary.com/..."><div class="chart-note">&#10003; &#7842;nh Cloudinary c&#244;ng khai &#273;&#227; c&#243; URL; t&#7921; &#273;i&#7873;n v&#224;o c&#7897;t O trong Excel, kh&#244;ng c&#7847;n ID b&#7843;ng size.</div></div></div></div></section>
-    <section class="panel section"><div class="section-head"><h2>05 · Cloudinary · Tự động tạo URL ảnh</h2></div><div class="section-body">
-      <p class="fine" style="margin:0 0 14px">Điền Cloud name và Unsigned upload preset một lần, hoặc khai báo trong Render. Mỗi lần bạn chọn ảnh trên máy, web tự upload và lấy URL HTTPS điền vào Excel. Không cần API Key hoặc API Secret.</p>
-      <div class="grid-2"><div class="field"><label for="cloudName">Cloud name</label><input id="cloudName" placeholder="Ví dụ: harin-cloud"></div><div class="field"><label for="cloudPreset">Unsigned upload preset</label><input id="cloudPreset" placeholder="Ví dụ: harin_public"></div></div>
-      <div class="row" style="margin-top:15px;flex-wrap:wrap"><label class="toggle"><input id="autoUploadSwitch" type="checkbox" checked> Tự động tải ảnh ngay khi chọn từ máy</label></div><div class="inline-status" id="cloudReadyStatus" style="margin-top:11px">Đang kiểm tra cấu hình…</div><div class="row" style="justify-content:space-between;flex-wrap:wrap;margin-top:15px"><a href="https://cloudinary.com/documentation/upload_presets" target="_blank" rel="noopener noreferrer" style="color:var(--accent-dark);font-size:12px">Hướng dẫn tạo Unsigned Upload Preset ↗</a><button class="btn primary" id="uploadAll">☁ Thử tải ảnh còn thiếu</button></div>
-      <div id="uploadProgress" class="fine" style="margin-top:10px"></div>
-      <div class="warning">Ảnh tải lên Cloudinary sẽ có <strong>URL công khai</strong>. Tài khoản Cloudinary chịu dung lượng ảnh. Không nhập API Secret vào web, và nên bảo vệ web bằng mật khẩu ACCESS_PASSWORD trên Render.</div>
-    </div></section>
-    <section class="panel section"><div class="section-head"><h2>06 · File xuất ra</h2></div><div class="section-body"><div class="field"><label for="formatType">Mẫu Shopee</label><select id="formatType"><option value="advanced">Mẫu Thời trang nữ 100017 (có cột Thương hiệu)</option><option value="basic">Mẫu cơ bản đa ngành hàng (không có cột Thương hiệu)</option></select></div><div id="basicWarning" class="warning hidden">Mẫu cơ bản cho nhiều ngành hàng không có cột Thương hiệu. Web không thể tự điền No Brand ở mẫu này; bạn có thể cần xác nhận thương hiệu trong Kênh Người Bán. Mẫu nâng cao 100017 chỉ dành cho Thời Trang Nữ.</div><div class="row" style="margin-top:15px;flex-wrap:wrap"><button class="btn primary" id="exportBottom">↓ Tạo file XLSX</button><button class="btn" id="zipBottom">↓ XLSX + ảnh (ZIP)</button></div><div id="exportStatus" class="fine" style="margin-top:10px">File Excel được tạo trên trình duyệt của bạn. Ảnh gửi trực tiếp từ trình duyệt tới Cloudinary, không lưu trên Render. Thiếu URL ảnh sẽ được cảnh báo trước khi xuất.</div></div></section>
+    <section class="panel section"><div class="section-head"><h2>05 · File xuất ra</h2></div><div class="section-body"><div class="field"><label for="formatType">Mẫu Shopee</label><select id="formatType"><option value="advanced">Mẫu Thời trang nữ 100017 (có cột Thương hiệu)</option><option value="basic">Mẫu cơ bản đa ngành hàng (không có cột Thương hiệu)</option></select></div><div id="basicWarning" class="warning hidden">Mẫu cơ bản cho nhiều ngành hàng không có cột Thương hiệu. Web không thể tự điền No Brand ở mẫu này; bạn có thể cần xác nhận thương hiệu trong Kênh Người Bán. Mẫu nâng cao 100017 chỉ dành cho Thời Trang Nữ.</div><div class="row" style="margin-top:15px;flex-wrap:wrap"><button class="btn primary" id="exportBottom">↓ Tạo file XLSX</button><button class="btn" id="zipBottom">↓ XLSX + ảnh (ZIP)</button></div><div id="exportStatus" class="fine" style="margin-top:10px">File Excel được tạo trên trình duyệt của bạn. Ảnh gửi trực tiếp từ trình duyệt tới Cloudinary, không lưu trên Render. Thiếu URL ảnh sẽ được cảnh báo trước khi xuất.</div></div></section>
     <div class="footer-note">Made for harin.studios · Docker / Render · Excel dựa trên biểu mẫu Shopee người dùng cung cấp</div>
   </main>
   <aside class="right">

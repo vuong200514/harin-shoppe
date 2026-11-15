@@ -1,3 +1,38 @@
+# Harin Studios V4 — tự upload ảnh trong mục 02, dropdown size không bị che
+
+## Điểm mới
+
+- Không còn mục nhập Cloudinary trên web. Cloud name mặc định **p8nrkuot**, Unsigned preset mặc định **harin_unsigned** (đã do chủ shop cung cấp). Biến môi trường Render `CLOUDINARY_CLOUD_NAME` / `CLOUDINARY_UPLOAD_PRESET` vẫn có thể ghi đè khi cần.
+- Chọn hoặc kéo thả ảnh ở mục **02** sẽ tự tải trực tiếp lên Cloudinary, lấy `secure_url` từ phản hồi và lưu URL vào sản phẩm để xuất XLSX. Không phải sao chép đường dẫn; nếu lỗi, nút **Tải lại ảnh lỗi** ở ngay mục 02.
+- Mục Cloudinary cũ đã bỏ. Dropdown size S/M/L mở rộng ngay dưới nút trong luồng tài liệu thay vì overlay bị card cắt hay thiếu chỗ cuộn.
+- Giữ nguyên ngành hàng 1.813 ID, hai mẫu Shopee, vận chuyển, tồn kho, bảng size và các tính năng khác từ V3.
+
+## Cập nhật Render
+
+Giải nén ZIP, chép toàn bộ **nội dung** thư mục `harin_render_docker_v4` vào `D:\Code\harin_render_docker`, ghi đè file cũ (không xóa `.git`).
+
+```powershell
+cd "D:\Code\harin_render_docker"
+git add .
+git commit -m "Harin V4 automatic image uploads and size dropdown fix"
+git push origin main
+```
+
+Nếu bật Auto-Deploy, Render sẽ triển khai commit mới. Nếu không, vào Manual Deploy → Deploy latest commit. Ctrl+Shift+R để làm mới trang.
+
+## Render Environment
+
+- `ACCESS_USER` = `harin`
+- `ACCESS_PASSWORD` = mật khẩu mạnh tự đặt (**nên bắt buộc khi ứng dụng public**)
+- `CLOUDINARY_CLOUD_NAME` = `p8nrkuot` *(tùy chọn vì đã mặc định)*
+- `CLOUDINARY_UPLOAD_PRESET` = `harin_unsigned` *(tùy chọn vì đã mặc định)*
+
+**Không đặt Cloudinary API Secret trên web hay commit GitHub.** Preset Unsigned cho phép upload công khai nếu người khác biết Cloud name/preset; giới hạn loại/dung lượng ảnh trên Cloudinary và bảo vệ Render bằng mật khẩu mạnh. Mọi ảnh sản phẩm được upload là ảnh công khai. Không có đồng bộ sản phẩm qua các máy; dữ liệu được lưu ở trình duyệt đang dùng.
+
+**Kiểm tra upload thực:** Cần thử bằng 1 ảnh với tài khoản Cloudinary của bạn khi lên Render. Bản thử tự động ở đây có mô phỏng phản hồi Cloudinary; nó không thay thế cho kiểm thử trực tiếp qua tài khoản của chủ shop. File Shopee vẫn cần thử đăng thực tế để kiểm tra danh mục và thuộc tính.
+
+---
+
 # Harin Studios V3 - Tìm ngành hàng tức thì, có dấu/không dấu
 
 **Nguồn:** Đã trích xuất 1.813 mã ngành hàng lá thuộc 27 nhóm từ sheet `Phạm vi ngày chuẩn bị hàng` của file `Shopee_mass_upload_2026-11-15_basic_template.xlsx` (2026-11-15) do chủ shop cung cấp. 76 ngành Thời Trang Nữ dùng được mẫu nâng cao `100017` đã được đối chiếu với file `Shopee_mass_upload_2026-11-15_100017.xlsx`. Đây là danh sách đóng gói theo thời điểm tải mẫu, không phải API cập nhật realtime.

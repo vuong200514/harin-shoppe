@@ -5,8 +5,10 @@ const $=id=>document.getElementById(id);
 const nowStamp=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('')+'_'+[d.getHours(),d.getMinutes()].map(x=>String(x).padStart(2,'0')).join('');};
 const CATEGORY_BY_ID=new Map((window.SHOPEE_CATEGORIES||[]).map(c=>[String(c.id),c]));
 const DEFAULT_CHART_URL='https://res.cloudinary.com/p8nrkuot/image/upload/v1794772267/bang_quy_doi_kich_co_harin_studios.png';
+const DEFAULT_CLOUD_NAME='p8nrkuot';
+const DEFAULT_CLOUD_PRESET='harin_unsigned';
 const defaultProduct=()=>({name:'',category:'',price:'',sku:'',material:'',origin:'',stock:50,hasSizes:true,sizes:'S, M, L',chartMode:'image',chartGroup:'top',chartUrl:DEFAULT_CHART_URL,images:[]});
-const state={products:[defaultProduct()],selected:0,format:'advanced',shipping:{...E.SHIPPING},cloudName:'',cloudPreset:'',autoUpload:true,uploading:false};
+const state={products:[defaultProduct()],selected:0,format:'advanced',shipping:{...E.SHIPPING},cloudName:DEFAULT_CLOUD_NAME,cloudPreset:DEFAULT_CLOUD_PRESET,autoUpload:true,uploading:false};
 function esc(s){return String(s??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
 function cur(){return state.products[state.selected];}
 function safeSave(){try{const payload={...state,uploading:false,products:state.products.map(p=>({...p,images:p.images.filter(i=>i.url).map(i=>({name:i.name,url:i.url}))}))};localStorage.setItem('harin_product_studio_v2',JSON.stringify(payload));}catch(err){console.warn('Autosave unavailable',err);}}
@@ -15,7 +17,7 @@ function load(){try{let s=JSON.parse(localStorage.getItem('harin_product_studio_
   state.selected=Math.min(Math.max(s.selected||0,0),state.products.length-1);
   state.format=s.format==='basic'?'basic':'advanced';state.shipping={...E.SHIPPING,...(s.shipping||{})};
   if(state.format==='advanced' && state.products.some(p=>p.category&&!CATEGORY_BY_ID.get(String(p.category))?.advanced))state.format='basic';
-  state.cloudName=String(s.cloudName||'');state.cloudPreset=String(s.cloudPreset||'');state.autoUpload=s.autoUpload!==false;
+  state.cloudName=DEFAULT_CLOUD_NAME;state.cloudPreset=DEFAULT_CLOUD_PRESET;state.autoUpload=true;
 }catch(err){console.warn('Could not load previous state',err);}}
 let toastTimer;
 function toast(text,error=false){const el=$('toast');el.textContent=text;el.style.background=error?'#a93d31':'#292825';el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),4500);}
@@ -30,7 +32,7 @@ function setInputs(){const p=cur();$('productIndex').textContent='Sản phẩm '
   $('chartGroupBox').style.display=p.chartMode==='image'?'none':'';$('chartUrlBox').style.display=p.chartMode==='image'?'':'none';
   $('formatType').value=state.format;$('basicWarning').classList.toggle('hidden',state.format!=='basic');
   $('itemCategory').setAttribute('aria-expanded','false');closeCategoryMenu();
-  $('cloudName').value=state.cloudName;$('cloudPreset').value=state.cloudPreset;$('autoUploadSwitch').checked=state.autoUpload;updateCloudStatus();
+  updateCloudStatus();
 }
 function renderPreview(){const p=cur();$('previewTitle').textContent=E.fullTitle(p.name||'Tên sản phẩm của bạn');$('previewPrice').textContent=p.price?Number(p.price).toLocaleString('vi-VN')+' ₫':'Chưa nhập';const n=countVariants(p);$('previewVariants').textContent=p.hasSizes?n+' size':'Không phân loại';$('previewStock').textContent=(n*Number(p.stock||0)).toLocaleString('vi-VN');$('previewImages').textContent=(p.images||[]).filter(x=>x.url).length+' / '+(p.images||[]).length;$('previewBrand').textContent=state.format==='advanced'?'No Brand':'Không có cột trong mẫu cơ bản';
   const valid=E.validate(state.products,state.format,{shipping:state.shipping});const checkpoints=[
@@ -45,9 +47,17 @@ function renderPreview(){const p=cur();$('previewTitle').textContent=E.fullTitle
 }
 function imageSrc(i){if(i.preview)return i.preview;if(i.url)return i.url;return '';}
 function cloudReady(){return !!(state.cloudName.trim()&&state.cloudPreset.trim());}
-function updateCloudStatus(){const el=$('cloudReadyStatus');if(el){el.textContent=cloudReady()?'✓ Đã cấu hình Cloudinary · '+(state.autoUpload?'tự đăng ảnh khi chọn':'chế độ đăng thủ công'):'Chưa cấu hình Cloudinary — nhập Cloud name và preset hoặc đặt biến Render';el.style.color=cloudReady()?'var(--green)':'#bb683b';}}
-function imageGrid(){const grid=$('imageGrid');grid.textContent='';const p=cur();for(let i=0;i<p.images.length;i++){const img=p.images[i];const box=document.createElement('div');box.className='image-card';const frame=document.createElement('div');frame.className='image-frame';const pic=document.createElement('img');pic.src=imageSrc(img);pic.alt=img.name||'Ảnh sản phẩm';pic.onerror=()=>pic.style.visibility='hidden';const badge=document.createElement('span');badge.className='image-label';badge.textContent=i===0?'ẢNH BÌA':`ẢNH ${i}`;frame.append(pic,badge);const act=document.createElement('div');act.className='image-actions';const stateSpan=document.createElement('span');stateSpan.className=img.url?'ok-dot':'wait-dot';stateSpan.textContent=img.url?'✓ URL':img.uploadStatus==='uploading'?'↻ ĐANG TẢI':img.uploadStatus==='error'?'! LỖI':'● CHƯA TẢI';if(img.uploadError)stateSpan.title=img.uploadError;const group=document.createElement('span');for(const [txt,diff] of [['←',-1],['→',1]]){const b=document.createElement('button');b.textContent=txt;b.title='Đổi thứ tự ảnh';b.disabled=(diff<0&&i===0)||(diff>0&&i===p.images.length-1);b.onclick=()=>{[p.images[i],p.images[i+diff]]=[p.images[i+diff],p.images[i]];imageGrid();renderPreview();safeSave();};group.appendChild(b);}const del=document.createElement('button');del.textContent='×';del.title='Xóa ảnh';del.onclick=()=>{let removed=p.images.splice(i,1)[0];if(removed.preview?.startsWith('blob:'))URL.revokeObjectURL(removed.preview);imageGrid();renderPreview();safeSave();};group.appendChild(del);if(img.url){const copy=document.createElement('button');copy.textContent='URL';copy.title='Sao chép URL ảnh';copy.onclick=()=>navigator.clipboard?.writeText(img.url).then(()=>toast('Đã sao chép URL ảnh.')).catch(()=>toast('Không sao chép được URL.',true));group.appendChild(copy);}act.append(stateSpan,group);const name=document.createElement('div');name.className='image-name';name.title=img.name||'';name.textContent=img.name||'Ảnh đã có URL';box.append(frame,act,name);grid.appendChild(box);}}
-function render(){closeCategoryMenu();setDropdown(false);renderList();setInputs();imageGrid();renderPreview();safeSave();}
+function updateCloudStatus(){
+  const el=$('cloudReadyStatus');if(!el)return;
+  const pending=state.products.flatMap(p=>p.images||[]).filter(i=>i.blob&&!i.url);
+  const errors=pending.filter(i=>i.uploadStatus==='error');
+  const ready=cloudReady();
+  el.textContent=!ready?'⚠ Chưa có kết nối Cloudinary':state.uploading?'↻ Đang tự tải ảnh lên Cloudinary…':errors.length?'⚠ Có '+errors.length+' ảnh chưa tải thành công':'✓ Cloudinary sẵn sàng · tự lấy URL khi chọn ảnh';
+  const retry=$('uploadAll');retry.classList.toggle('hidden',!(pending.length&&!state.uploading));
+  $('uploadInline').classList.toggle('has-error',!ready||errors.length>0);
+}
+function imageGrid(){const grid=$('imageGrid');grid.textContent='';const p=cur();for(let i=0;i<p.images.length;i++){const img=p.images[i];const box=document.createElement('div');box.className='image-card';const frame=document.createElement('div');frame.className='image-frame';const pic=document.createElement('img');pic.src=imageSrc(img);pic.alt=img.name||'Ảnh sản phẩm';pic.onerror=()=>pic.style.visibility='hidden';const badge=document.createElement('span');badge.className='image-label';badge.textContent=i===0?'ẢNH BÌA':`ẢNH ${i}`;frame.append(pic,badge);const act=document.createElement('div');act.className='image-actions';const stateSpan=document.createElement('span');stateSpan.className=img.url?'ok-dot':'wait-dot';stateSpan.textContent=img.url?'✓ URL':img.uploadStatus==='uploading'?'↻ ĐANG TẢI':img.uploadStatus==='error'?'! LỖI':'● CHƯA TẢI';if(img.uploadError)stateSpan.title=img.uploadError;const group=document.createElement('span');for(const [txt,diff] of [['←',-1],['→',1]]){const b=document.createElement('button');b.textContent=txt;b.title='Đổi thứ tự ảnh';b.disabled=(diff<0&&i===0)||(diff>0&&i===p.images.length-1);b.onclick=()=>{[p.images[i],p.images[i+diff]]=[p.images[i+diff],p.images[i]];imageGrid();renderPreview();safeSave();};group.appendChild(b);}const del=document.createElement('button');del.textContent='×';del.title='Xóa ảnh';del.onclick=()=>{let removed=p.images.splice(i,1)[0];if(removed.preview?.startsWith('blob:'))URL.revokeObjectURL(removed.preview);imageGrid();renderPreview();safeSave();updateCloudStatus();};group.appendChild(del);if(img.url){const copy=document.createElement('button');copy.textContent='URL';copy.title='Sao chép URL ảnh';copy.onclick=()=>navigator.clipboard?.writeText(img.url).then(()=>toast('Đã sao chép URL ảnh.')).catch(()=>toast('Không sao chép được URL.',true));group.appendChild(copy);}act.append(stateSpan,group);const name=document.createElement('div');name.className='image-name';name.title=img.name||'';name.textContent=img.name||'Ảnh đã có URL';box.append(frame,act,name);grid.appendChild(box);}}
+function render(){closeCategoryMenu();setDropdown(false);renderList();setInputs();imageGrid();renderPreview();safeSave();updateCloudStatus();}
 function wireText(id,key){$(id).addEventListener('input',event=>{cur()[key]=event.target.value;if(key==='name'||key==='price')renderList();renderPreview();safeSave();});}
 function sizesSelected(p){return E.normalizeSizes(p.sizes||'').filter(s=>['S','M','L'].includes(s));}
 function renderSizeChoices(){const selected=sizesSelected(cur());
@@ -65,8 +75,7 @@ async function optimizeImage(file){if(file.type&&!file.type.startsWith('image/')
   if(blob.size>2*1024*1024)throw Error('Ảnh vượt 2MB sau khi nén.');return {blob,name:file.name.replace(/\.[^.]+$/,'')+'.jpg'};
 }
 async function addPhotos(files){const p=cur();let count=0;for(const f of Array.from(files)){if(p.images.length>=9){toast('Mỗi sản phẩm tối đa 9 ảnh.',true);break;}try{const {blob,name}=await optimizeImage(f);p.images.push({name,blob,file:true,preview:URL.createObjectURL(blob),url:''});count++;}catch(e){toast(f.name+': '+e.message,true);}}
-  imageGrid();renderPreview();safeSave();if(count){toast('Đã chọn '+count+' ảnh.'+(state.autoUpload&&cloudReady()?' Đang tự tải lên Cloudinary…':' Hãy cấu hình Cloudinary ở mục 05 để tải lên.'));if(state.autoUpload&&cloudReady())await uploadAll({silent:true});}}
-function addUrls(){const p=cur();let n=0;for(const raw of $('imageUrls').value.split(/[\n,]+/)){const url=raw.trim();if(!url)continue;if(!/^https:\/\//i.test(url)){toast('URL ảnh phải bắt đầu bằng https://',true);return;}if(p.images.length>=9){toast('Tối đa 9 ảnh.',true);break;}p.images.push({name:'Ảnh từ URL',url});n++;}if(n){$('imageUrls').value='';imageGrid();renderPreview();safeSave();toast('Đã thêm '+n+' URL ảnh.');}}
+  imageGrid();renderPreview();safeSave();updateCloudStatus();if(count){toast('Đã chọn '+count+' ảnh. Đang tự tải lên Cloudinary…');if(cloudReady())await uploadAll({silent:true});else{toast('Chưa có cấu hình Cloudinary trên server.',true);}}}
 function base64ToBlob(b64,mime){const binary=atob(b64);const bytes=new Uint8Array(binary.length);for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);return new Blob([bytes],{type:mime});}
 function chartBlob(){return base64ToBlob(window.HARIN_CHART_B64,'image/png');}
 async function uploadCloud(blob,filename){
@@ -80,14 +89,14 @@ async function uploadCloud(blob,filename){
 }
 let currentUploadPromise=null;
 async function uploadAll({silent=false}={}){
-  state.cloudName=$('cloudName').value.trim();state.cloudPreset=$('cloudPreset').value.trim();updateCloudStatus();safeSave();
+  updateCloudStatus();safeSave();
   if(!cloudReady()){
-    if(!silent){toast('Nhập Cloud name và tên Unsigned preset ở mục 05 trước.',true);$('cloudName').focus();}
+    if(!silent)toast('Chưa có kết nối Cloudinary. Kiểm tra Environment trên Render.',true);
     return {done:0,failed:0,missing:true};
   }
   if(currentUploadPromise)return currentUploadPromise;
   currentUploadPromise=(async()=>{
-    state.uploading=true;$('uploadAll').disabled=true;
+    state.uploading=true;$('uploadAll').disabled=true;updateCloudStatus();
     const progress=$('uploadProgress'), failedImages=new Set();
     let done=0,failed=0,started=0;
     try{
@@ -116,7 +125,7 @@ async function uploadAll({silent=false}={}){
           failedImages.add(img);failed++;
           toast('Ảnh '+img.name+': '+img.uploadError,true);
         }
-        imageGrid();renderPreview();
+        imageGrid();renderPreview();updateCloudStatus();
       }
       const needChart=state.products.some(p=>p.chartMode==='image'&&!/^https:\/\//i.test(p.chartUrl||''));
       if(needChart){
@@ -127,13 +136,13 @@ async function uploadAll({silent=false}={}){
           done++;safeSave();$('chartUrl').value=cur().chartUrl||'';
         }catch(e){failed++;toast('Tải bảng size thất bại: '+e.message,true);}
       }
-      progress.textContent=done+' ảnh đã có URL Cloudinary'+(failed?' · '+failed+' ảnh lỗi, bấm “Thử tải ảnh còn thiếu” để thử lại.':' · hoàn tất!');
+      progress.textContent=done+' ảnh mới đã có URL Cloudinary'+(failed?' · '+failed+' ảnh lỗi, bấm “Tải lại ảnh lỗi” ở đây để thử lại.':' · hoàn tất!');
       renderPreview();renderList();safeSave();
       if(done&&!silent)toast('Đã tạo URL cho '+done+' ảnh.');
       return {done,failed,missing:false};
     }finally{
       state.uploading=false;$('uploadAll').disabled=false;
-      imageGrid();renderPreview();
+      imageGrid();renderPreview();updateCloudStatus();
     }
   })();
   try{return await currentUploadPromise;}finally{currentUploadPromise=null;}
@@ -142,7 +151,7 @@ function alertInvalid(pack=false){
   const v=E.validate(state.products,state.format,{shipping:state.shipping});
   if(v.errors.length){alert('Chưa thể tạo Excel vì:\n\n'+v.errors.join('\n'));return false;}
   if(v.missingUrls){
-    const reason=`${v.missingUrls} sản phẩm chưa có ảnh bìa dạng URL HTTPS.\n\nHãy chọn ảnh từ máy và cấu hình Cloudinary để web tự tạo URL.`;
+    const reason=`${v.missingUrls} sản phẩm chưa có ảnh bìa dạng URL HTTPS.\n\nChọn ảnh tại mục 02 và kiểm tra trạng thái tải lên Cloudinary.`;
     if(pack)return confirm(reason+'\n\nBạn vẫn muốn tải ZIP lưu nháp (Excel chưa đủ ảnh để đăng Shopee)?');
     alert(reason+'\n\nChưa xuất Excel để tránh nhầm thành file đã sẵn sàng đăng Shopee.');
     return false;
@@ -284,17 +293,14 @@ function init(){load();$('descriptionPreview').textContent=E.DESCRIPTION;
 
   for(const id of ['chartSaved','chartImage'])$(id).onchange=ev=>{if(!ev.target.checked)return;cur().chartMode=ev.target.value;$('chartGroupBox').style.display=cur().chartMode==='image'?'none':'';$('chartUrlBox').style.display=cur().chartMode==='image'?'':'none';renderPreview();safeSave();};
   $('formatType').onchange=ev=>{const desired=ev.target.value;if(desired==='advanced' && state.products.some(p=>p.category&&!CATEGORY_BY_ID.get(String(p.category))?.advanced)){ev.target.value='basic';toast('Mẫu nâng cao 100017 chỉ nhận ngành hàng Thời Trang Nữ. Hãy dùng mẫu cơ bản cho các ngành khác.',true);return;}state.format=desired;setInputs();renderPreview();safeSave();};
-  for(const id of ['cloudName','cloudPreset'])$(id).addEventListener('input',ev=>{state[id]=ev.target.value;updateCloudStatus();safeSave();});
-  for(const id of ['cloudName','cloudPreset'])$(id).addEventListener('change',()=>{if(state.autoUpload&&cloudReady())uploadAll({silent:true});});
-  $('autoUploadSwitch').onchange=ev=>{state.autoUpload=ev.target.checked;updateCloudStatus();safeSave();if(state.autoUpload&&cloudReady())uploadAll({silent:true});};
   $('addProduct').onclick=addOne;$('bulkProducts').onclick=addBulk;$('cloneProduct').onclick=cloneCurrent;$('deleteProduct').onclick=deleteCurrent;
   $('imageDrop').onclick=()=>$('imageFile').click();$('imageDrop').onkeydown=ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();$('imageFile').click();}};
   $('imageDrop').ondragover=ev=>{ev.preventDefault();$('imageDrop').classList.add('dragover');};$('imageDrop').ondragleave=()=>$('imageDrop').classList.remove('dragover');$('imageDrop').ondrop=ev=>{ev.preventDefault();$('imageDrop').classList.remove('dragover');addPhotos(ev.dataTransfer.files);};
-  $('imageFile').onchange=async ev=>{await addPhotos(ev.target.files);ev.target.value='';};$('appendUrls').onclick=addUrls;
+  $('imageFile').onchange=async ev=>{await addPhotos(ev.target.files);ev.target.value='';};
   $('uploadAll').onclick=uploadAll;$('excelBtn').onclick=$('exportBottom').onclick=()=>doExport(false);$('zipBtn').onclick=$('zipBottom').onclick=()=>doExport(true);
   $('chartPreview').onerror=()=>{$('chartPreview').src='assets/bang_quy_doi_size_harin.png';};
   $('chartDownload').onclick=()=>download(chartBlob(),'bang_quy_doi_kich_co_harin_studios.png');render();
-  if(location.protocol==='http:'||location.protocol==='https:'){fetch('/api/public-config',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(cfg=>{if(!cfg)return;if(cfg.cloudName)state.cloudName=cfg.cloudName;if(cfg.cloudPreset)state.cloudPreset=cfg.cloudPreset;setInputs();safeSave();if(state.autoUpload&&cloudReady())uploadAll({silent:true});}).catch(()=>{});}
+  if(location.protocol==='http:'||location.protocol==='https:'){fetch('/api/public-config',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(cfg=>{if(!cfg)return;if(cfg.cloudName)state.cloudName=cfg.cloudName;if(cfg.cloudPreset)state.cloudPreset=cfg.cloudPreset;updateCloudStatus();safeSave();if(cloudReady())uploadAll({silent:true});}).catch(()=>{});}
 }
 init();
 })();

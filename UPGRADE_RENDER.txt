@@ -1,11 +1,13 @@
-HARIN V3 - SEARCH NGANH HANG KHONG DAU
+HARIN STUDIOS V4 — CAP NHAT RENDER
 
-Trich 1.813 nganh hang/ID tu mau Shopee CO BAN cua ban, 27 nhom. Tim go `nam`, `dien thoai`, `ao` la hien dropdown ben duoi ngay. 76 nganh Thoi Trang Nu duoc ho tro mau Nang cao 100017. Chon nganh khac thi tu dong chuyen mau Co ban. Mau Co ban khong co cot No Brand.
+1. Giai nen, copy noi dung thu muc harin_render_docker_v4 vao D:\Code\harin_render_docker (giu .git).
+2. Mo PowerShell:
+   cd "D:\Code\harin_render_docker"
+   git add .
+   git commit -m "Harin V4 auto image upload and size dropdown"
+   git push origin main
+3. Render deploy lai. Ctrl+Shift+R sau khi deploy.
 
-1. Giai nen ZIP, copy tat ca file ben trong folder harin_render_docker_v3 vao D:\Code\harin_render_docker (KHONG xoa .git).
-2. PowerShell:
-cd "D:\Code\harin_render_docker"
-git add .
-git commit -m "Harin V3 Shopee categories autocomplete"
-git push origin main
-3. Render auto deploy; neu khong, Manual Deploy. Ctrl+Shift+R.
+Chon anh o muc 02 -> tu upload Cloudinary -> tu dien URL vao Excel.
+Khong can nhap Cloudinary tren web (preset da mac dinh).
+Neu upload loi, bam Tai lai anh loi ngay muc 02.
