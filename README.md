@@ -66,6 +66,24 @@ Tai lieu: https://render.com/docs/docker | https://render.com/docs/blueprint-spe
 
 **Quan trong:** File XLSX duoc sinh tu hai mau Shopee da tai len. Shopee co the tu choi neu nganh hang/thuoc tinh/ID bang size/mã brand khong hop le. Hay thu voi 1 san pham truoc va xem bao cao loi nhap file. Ma No Brand `0` duoc giu tu web cu va chua duoc kiem chung tren shop.
 
+## Cap nhat website da co tren Render
+
+Neu ban da deploy GitHub repo `https://github.com/vuong200514/harin-shoppe` va co thu muc `D:\Code\harin_render_docker`:
+
+1. Giai nen ban ZIP V2, sao chep toan bo file trong thu muc `harin_render_docker_v2` vao `D:\Code\harin_render_docker` (ghi de file cu; KHONG xoa thu muc `.git`).
+2. Trong PowerShell chay:
+
+```powershell
+cd "D:\Code\harin_render_docker"
+git add .
+git commit -m "Update Harin stock shipping sizes and size chart"
+git push origin main
+```
+
+3. Render se tu deploy khi co commit moi neu Auto-Deploy duoc bat. Neu khong, vao Render > Manual Deploy > Deploy latest commit.
+4. Sau deploy, bam Ctrl+Shift+R de tai lai giao dien, tranh cache cu.
+5. Thong tin san pham da luu tren trinh duyet cu (localStorage v1) se duoc nang cap sang v2, giu lai thong tin san pham va danh sach URL anh da luu. Anh may chua upload thuong khong duoc luu vao localStorage.
+
 ## 5. Docker local (tuy chon)
 
 Neu co Docker Desktop:

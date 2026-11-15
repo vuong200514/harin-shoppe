@@ -70,11 +70,11 @@ Cảm ơn bạn đã lựa chọn 𝒉𝒂𝒓𝒊𝒏.𝒔𝒕𝒖𝒅𝒊𝒐�
           A: numeric(p.category), B: fullTitle(p.name), C: DESCRIPTION,
           D: baseSku, E: p.hasSizes ? groupId : undefined,
           F: groupName, G: size,
-          K: numeric(p.price), L: 50, M: sku,
+          K: numeric(p.price), L: numeric(p.stock??50), M: sku,
           N: chartMode==='saved' ? numeric(chartId) : undefined,
           O: chartMode==='image' ? (p.chartUrl||options.chartUrl||'') : undefined,
           Z: 0.5, AA: 15, AB: 20, AC: 5,
-          ...SHIPPING,
+          ...SHIPPING,...(options.shipping||{}),
           ...(advanced ? {AL:0, AN:p.origin||undefined, AO:p.material||undefined} : {})
         };
         for (let u=0;u<urls.length;u++) data[String.fromCharCode('Q'.charCodeAt(0)+u)] = urls[u];
@@ -115,9 +115,10 @@ Cảm ơn bạn đã lựa chọn 𝒉𝒂𝒓𝒊𝒏.𝒔𝒕𝒖𝒅𝒊𝒐�
     }
     return {blob:await zip.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:6}}), rows:result.rowCount};
   }
-  function validate(products, format='advanced') {
+  function validate(products, format='advanced',options={}) {
     const errors=[];
     if (!products.length)errors.push('Chưa có sản phẩm nào.');
+    if (options.shipping && !Object.values(options.shipping).includes('Mở'))errors.push('Phải bật ít nhất một kênh vận chuyển.');
     let missingUrls=0, localImages=0;
     for (let i=0;i<products.length;i++) {
       const p=products[i],tag=`Sản phẩm ${i+1}`;
@@ -126,6 +127,7 @@ Cảm ơn bạn đã lựa chọn 𝒉𝒂𝒓𝒊𝒏.𝒔𝒕𝒖𝒅𝒊𝒐�
       if (!Number.isFinite(Number(p.price))||Number(p.price)<1000||Number(p.price)>120000000)errors.push(`${tag}: giá phải trong khoảng 1.000 – 120.000.000đ.`);
       if (fullTitle(p.name).length>120)errors.push(`${tag}: tên đầy đủ vượt 120 ký tự.`);
       if (p.hasSizes && !normalizeSizes(p.sizes).length)errors.push(`${tag}: thiếu danh sách kích cỡ.`);
+      if (!Number.isInteger(Number(p.stock))||Number(p.stock)<0||Number(p.stock)>999999||p.stock==='')errors.push(`${tag}: tồn kho phải là số nguyên từ 0 đến 999.999.`);
       if (p.chartMode==='image' && !/^https:\/\//i.test(p.chartUrl||''))errors.push(`${tag}: chế độ ảnh bảng size cần URL công khai.`);
       const images=p.images||[];
       const urls=getImageUrls(p);
@@ -135,5 +137,5 @@ Cảm ơn bạn đã lựa chọn 𝒉𝒂𝒓𝒊𝒏.𝒔𝒕𝒖𝒅𝒊𝒐�
     }
     return {errors,missingUrls,localImages};
   }
-  root.HarinExport={DESCRIPTION,PREFIX,SIZE_IDS,SHIPPING,fullTitle,buildRows,exportWorkbook,validate};
+  root.HarinExport={DESCRIPTION,PREFIX,SIZE_IDS,SHIPPING,normalizeSizes,fullTitle,buildRows,exportWorkbook,validate};
 })(typeof window!=='undefined'?window:globalThis);

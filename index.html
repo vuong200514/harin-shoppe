@@ -25,7 +25,25 @@
     @media(max-width:1270px){.layout{grid-template-columns:250px minmax(0,1fr)}.right{grid-column:2;position:static;display:grid;grid-template-columns:1fr 1fr;gap:16px}.right .panel{margin:0}.constant-grid{grid-template-columns:repeat(2,1fr)}}
     @media(max-width:800px){.app-header{padding:13px 16px;height:auto;position:static;flex-wrap:wrap}.brand-name{font-size:19px}.head-note{display:none}.layout{display:block;padding:15px}.left,.right{position:static}.left{margin-bottom:14px}.sidebar-list{max-height:190px}.main{margin-top:15px}.right{display:block}.right .panel{margin-bottom:15px}.page-head h1{font-size:25px}.section-body{padding:18px}.section-head{padding:18px}.images{grid-template-columns:repeat(3,1fr)}}
     @media(max-width:540px){.grid-2,.size-section{grid-template-columns:1fr}.shipping-grid{grid-template-columns:1fr}.images{grid-template-columns:repeat(2,1fr)}.brand-meta{letter-spacing:1px}.header-actions{width:100%}.header-actions .btn{flex:1}.constant-grid{grid-template-columns:repeat(2,1fr)}}
-  </style>
+  
+    .editable-stock{height:38px!important;width:94px!important;border:1px solid #e4d7cd!important;border-radius:9px!important;background:white!important;padding:4px 10px!important;font-size:19px!important;font-weight:800;color:var(--ink);margin-top:4px}
+    .stock-note{font-size:10px;color:var(--muted);margin-top:5px}
+    .ship-control{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;background:#faf8f5;border-radius:10px;padding:9px 12px;cursor:pointer;font-size:12px;transition:background .15s;border:1px solid transparent}
+    .ship-control:has(input:checked){background:#f5fbf8;border-color:#dceee6}.ship-control:hover{border-color:#d8c8bf}
+    .ship-control .ship-toggle{width:39px;height:23px;border-radius:99px;background:#c7c3bf;position:relative;flex:none;transition:background .15s}
+    .ship-control .ship-toggle:after{content:'';display:block;position:absolute;top:3px;left:3px;width:17px;height:17px;border-radius:50%;background:white;box-shadow:0 1px 2px #0002;transition:transform .15s}
+    .ship-control:has(input:checked) .ship-toggle{background:#23986e}.ship-control:has(input:checked) .ship-toggle:after{transform:translateX(16px)}
+    .ship-control input{position:absolute;width:1px;height:1px;opacity:0}.ship-control:focus-within{outline:2px solid #e7a090;outline-offset:2px}
+    .ship-state{font-size:11px;font-weight:800;color:#9b938f;min-width:26px;text-align:right}.ship-control:has(input:checked) .ship-state{color:#15835d}
+    .size-multi{position:relative}.size-trigger{width:100%;min-height:44px;border:1px solid #e7dfd8;background:white;border-radius:11px;display:flex;align-items:center;justify-content:space-between;padding:9px 13px;text-align:left;gap:9px}
+    .size-trigger:hover{border-color:#dcbaa9}.size-trigger[aria-expanded=true]{border-color:#d58f7e;box-shadow:0 0 0 3px #edab9930}
+    .size-tags{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.size-tag{background:#fae8e3;border:1px solid #f1cfc5;padding:3px 9px;border-radius:8px;color:#973f33;font-weight:800;font-size:12px}.size-arrow{color:#96887e;font-size:16px}
+    .size-menu{position:absolute;z-index:12;left:0;right:0;top:calc(100% + 6px);background:white;border:1px solid #e7dfd8;box-shadow:0 15px 35px #50311e26;border-radius:12px;padding:8px}
+    .size-choice{display:flex;align-items:center;justify-content:space-between;padding:11px 12px;cursor:pointer;border-radius:9px;border:1px solid transparent;margin-bottom:4px}.size-choice:hover{background:#faf6f3}.size-choice.selected{background:#fceae5;border-color:#efd0c6;color:#a44438;font-weight:800}
+    .size-choice input{accent-color:#cb6d5d;width:17px;height:17px}.size-menu-foot{display:flex;align-items:center;justify-content:space-between;gap:9px;padding:8px 5px 2px;color:var(--muted);font-size:11px}
+    .size-all{border:0;background:#fae9e4;color:#964638;padding:7px 10px;border-radius:8px;font-weight:800;font-size:11px}
+    .chart-note{margin-top:9px;font-size:11px;color:#327e63}
+</style>
 </head>
 <body>
 <header class="app-header">
@@ -55,8 +73,15 @@
           <div class="field"><label for="itemOrigin">Xuất xứ</label><select id="itemOrigin"><option value="">Chưa điền</option><option>Việt Nam</option><option>Trung Quốc</option><option>Hàn Quốc</option><option>Thái Lan</option><option>Nhật Bản</option><option>Khác</option></select></div>
         </div>
       </details>
-      <div class="divider"></div><div class="row" style="justify-content:space-between;flex-wrap:wrap"><label class="toggle"><input id="hasSizes" type="checkbox" checked> Có phân loại kích cỡ</label><span class="inline-status">Kho mặc định: 50 / phân loại</span></div>
-      <div class="field" id="sizeInputWrap" style="margin-top:12px"><label for="itemSizes">Các size (phân cách bằng dấu phẩy)</label><input id="itemSizes" value="S, M, L" placeholder="S, M, L"></div>
+      <div class="divider"></div><div class="row" style="justify-content:space-between;flex-wrap:wrap"><label class="toggle"><input id="hasSizes" type="checkbox" checked> Có phân loại kích cỡ</label><span class="inline-status">Kho mặc định 50/size · chỉnh ở mục 03</span></div>
+      <div class="field" id="sizeInputWrap" style="margin-top:12px"><label for="sizeTrigger">Ch&#7885;n size S / M / L (c&#243; th&#7875; ch&#7885;n nhi&#7873;u)</label>
+        <div class="size-multi" id="sizeDropdown"><button type="button" class="size-trigger" id="sizeTrigger" aria-haspopup="true" aria-expanded="false" aria-controls="sizeMenu"><span class="size-tags" id="sizeSelected"></span><span class="size-arrow" aria-hidden="true">&#9662;</span></button>
+          <div class="size-menu hidden" id="sizeMenu" role="group" aria-label="Chon kich co">
+            <label class="size-choice" data-size="S"><span>Size S</span><input type="checkbox" value="S" class="size-check"></label>
+            <label class="size-choice" data-size="M"><span>Size M</span><input type="checkbox" value="M" class="size-check"></label>
+            <label class="size-choice" data-size="L"><span>Size L</span><input type="checkbox" value="L" class="size-check"></label>
+            <div class="size-menu-foot"><span>Ch&#7885;n &#237;t nh&#7845;t m&#7897;t size</span><button type="button" id="sizeAll" class="size-all">Ch&#7885;n c&#7843; 3</button></div>
+          </div></div><div class="hint">Size &#273;&#432;&#7907;c ch&#7885;n s&#7869; c&#243; d&#7845;u t&#237;ch v&#224; n&#7873;n n&#7893;i b&#7853;t.</div></div>
       <div class="row" style="margin-top:19px;justify-content:flex-end;flex-wrap:wrap"><button class="btn small" id="cloneProduct">⧉ Nhân bản sản phẩm</button><button class="btn small ghost" id="deleteProduct">Xóa sản phẩm này</button></div>
     </div></section>
     <section class="panel section"><div class="section-head"><h2>02 · Ảnh sản phẩm từ máy</h2><span>Tối đa 9 ảnh / sản phẩm</span></div><div class="section-body">
@@ -65,21 +90,25 @@
       <details style="margin-top:16px"><summary style="cursor:pointer;font-weight:750;font-size:12px;color:#655b55">Hoặc thêm URL ảnh đã đăng lên mạng</summary><div class="field" style="margin-top:12px"><textarea id="imageUrls" placeholder="Mỗi dòng một URL ảnh https://..."></textarea><button class="btn soft small" id="appendUrls" style="align-self:flex-start">＋ Thêm URL ảnh</button></div></details>
       <div class="callout">☁ <strong>Tự động upload:</strong> Cấu hình Cloudinary một lần ở mục 05 hoặc trên Render. Từ lần sau cứ chọn ảnh từ máy, web tự tải lên và điền URL vào Excel. Trạng thái từng ảnh sẽ hiển thị ở đây. Nếu ảnh lỗi, dùng nút tải lại tại mục 05.</div>
     </div></section>
-    <section class="panel section"><div class="section-head"><h2>03 · Thiết lập cố định của shop</h2><span>Không cần nhập lại</span></div><div class="section-body">
-      <div class="constant-grid"><div class="constant"><div class="label">Thương hiệu</div><div class="value" style="font-size:17px">No Brand</div></div><div class="constant"><div class="label">Tồn kho / size</div><div class="value">50</div></div><div class="constant"><div class="label">Cân nặng</div><div class="value">500 g</div></div><div class="constant"><div class="label">Dài × Rộng × Cao</div><div class="value" style="font-size:18px">15 × 20 × 5</div><div class="label">cm</div></div></div>
-      <div class="section-caption">Đơn vị vận chuyển</div><div class="shipping-grid">
-        <div class="ship enabled">Nhanh <b>● BẬT</b></div><div class="ship enabled">Điểm nhận hàng <b>● BẬT</b></div>
-        <div class="ship enabled">Tủ nhận hàng - SPX <b>● BẬT</b></div><div class="ship enabled">Viettel Smartbox <b>● BẬT</b></div>
-        <div class="ship disabled">Hỏa tốc <b>○ TẮT</b></div><div class="ship disabled">Trong ngày <b>○ TẮT</b></div><div class="ship enabled">Hàng cồng kềnh <b>● BẬT</b></div>
+    <section class="panel section"><div class="section-head"><h2>03 · Thiết lập shop</h2><span>Giá trị mặc định · có thể chỉnh sửa</span></div><div class="section-body">
+      <div class="constant-grid"><div class="constant"><div class="label">Thương hiệu</div><div class="value" style="font-size:17px">No Brand</div></div><div class="constant"><label class="label" for="stockInput">T&#7891;n kho / size</label><input id="stockInput" class="editable-stock" type="number" inputmode="numeric" step="1" min="0" max="999999" value="50"><div class="stock-note">M&#7863;c &#273;&#7883;nh 50, ch&#7881;nh cho s&#7843;n ph&#7849;m &#273;ang ch&#7885;n</div></div><div class="constant"><div class="label">Cân nặng</div><div class="value">500 g</div></div><div class="constant"><div class="label">Dài × Rộng × Cao</div><div class="value" style="font-size:18px">15 × 20 × 5</div><div class="label">cm</div></div></div>
+      <div class="section-caption">&#272;&#417;n v&#7883; v&#7853;n chuy&#7875;n <span class="muted" style="font-size:11px;font-weight:500">&middot; B&#7853;t/t&#7855;t &#225;p d&#7909;ng cho m&#7885;i s&#7843;n ph&#7849;m khi xu&#7845;t Excel</span></div><div class="shipping-grid" id="shippingSettings">
+        <label class="ship-control"><span>Nhanh</span><input type="checkbox" data-ship="AE" checked><span class="ship-state">B&#7852;T</span><span class="ship-toggle" aria-hidden="true"></span></label>
+        <label class="ship-control"><span>&#272;i&#7875;m nh&#7853;n h&#224;ng</span><input type="checkbox" data-ship="AJ" checked><span class="ship-state">B&#7852;T</span><span class="ship-toggle" aria-hidden="true"></span></label>
+        <label class="ship-control"><span>T&#7911; nh&#7853;n h&#224;ng - SPX</span><input type="checkbox" data-ship="AI" checked><span class="ship-state">B&#7852;T</span><span class="ship-toggle" aria-hidden="true"></span></label>
+        <label class="ship-control"><span>Viettel Smartbox</span><input type="checkbox" data-ship="AH" checked><span class="ship-state">B&#7852;T</span><span class="ship-toggle" aria-hidden="true"></span></label>
+        <label class="ship-control"><span>H&#7887;a t&#7889;c</span><input type="checkbox" data-ship="AD"><span class="ship-state">T&#7854;T</span><span class="ship-toggle" aria-hidden="true"></span></label>
+        <label class="ship-control"><span>Trong ng&#224;y</span><input type="checkbox" data-ship="AG"><span class="ship-state">T&#7854;T</span><span class="ship-toggle" aria-hidden="true"></span></label>
+        <label class="ship-control"><span>H&#224;ng c&#7891;ng k&#7873;nh</span><input type="checkbox" data-ship="AF" checked><span class="ship-state">B&#7852;T</span><span class="ship-toggle" aria-hidden="true"></span></label>
       </div><div class="lock-note">♧ Giá cước 16.500đ trong ảnh là giá tham khảo Shopee hiển thị, không nhập cố định vào Excel.</div><div class="lock-note">Không bán đặt trước: để trống ngày chuẩn bị hàng. Không cần nhập bảng ánh xạ thuộc tính.</div>
     </div></section>
     <section class="panel section"><div class="section-head"><h2>04 · Bảng quy đổi kích cỡ</h2><span>Size S / M / L</span></div><div class="section-body"><div class="size-section">
-      <div class="size-visual"><img src="assets/bang_quy_doi_size_harin.png" alt="Bảng kích cỡ S M L ngực eo mông" id="chartPreview"><button class="btn small full" id="chartDownload" style="margin-top:11px">↓ Tải ảnh bảng size PNG</button></div>
+      <div class="size-visual"><img src="https://res.cloudinary.com/p8nrkuot/image/upload/v1794772267/bang_quy_doi_kich_co_harin_studios.png" alt="Bảng kích cỡ S M L ngực eo mông" id="chartPreview"><button class="btn small full" id="chartDownload" style="margin-top:11px">↓ Tải ảnh bảng size PNG</button></div>
       <div><div class="fine" style="margin-bottom:6px">Số đo cố định đúng ảnh đã cung cấp.</div><table class="size-table"><thead><tr><th>Size</th><th>Ngực</th><th>Eo</th><th>Mông</th></tr></thead><tbody><tr><td>S</td><td>82</td><td>64</td><td>88</td></tr><tr><td>M</td><td>86</td><td>68</td><td>92</td></tr><tr><td>L</td><td>90</td><td>72</td><td>96</td></tr></tbody></table>
-        <div class="radio-row"><input type="radio" id="chartSaved" name="chartMode" value="saved" checked><label for="chartSaved"><strong>Dùng bảng size đã lưu trên Shopee</strong><span class="fine" style="display:block">Dùng ID được tìm thấy trong file của bạn; nên đối chiếu với bảng bạn muốn.</span></label></div>
-        <div class="radio-row"><input type="radio" id="chartImage" name="chartMode" value="image"><label for="chartImage"><strong>Dùng đúng ảnh bảng S/M/L này</strong><span class="fine" style="display:block">Cần URL ảnh sau khi tải lên.</span></label></div>
+        <div class="radio-row"><input type="radio" id="chartSaved" name="chartMode" value="saved"><label for="chartSaved"><strong>Dùng bảng size đã lưu trên Shopee</strong><span class="fine" style="display:block">Dùng ID được tìm thấy trong file của bạn; nên đối chiếu với bảng bạn muốn.</span></label></div>
+        <div class="radio-row"><input type="radio" id="chartImage" name="chartMode" value="image" checked><label for="chartImage"><strong>Dùng đúng ảnh bảng S/M/L này</strong><span class="fine" style="display:block">Cần URL ảnh sau khi tải lên.</span></label></div>
       </div>
-    </div><div class="grid-2" style="margin-top:14px"><div class="field" id="chartGroupBox"><label for="chartGroup">Bảng có sẵn</label><select id="chartGroup"><option value="top">Áo — ID 1204838133</option><option value="bottom">Quần / Váy — ID 1504827701</option></select></div><div class="field" id="chartUrlBox" style="display:none"><label for="chartUrl">URL ảnh bảng size</label><input type="url" id="chartUrl" placeholder="https://res.cloudinary.com/..."></div></div></div></section>
+    </div><div class="grid-2" style="margin-top:14px"><div class="field" id="chartGroupBox" style="display:none"><label for="chartGroup">Bảng có sẵn</label><select id="chartGroup"><option value="top">Áo — ID 1204838133</option><option value="bottom">Quần / Váy — ID 1504827701</option></select></div><div class="field" id="chartUrlBox"><label for="chartUrl">URL ảnh bảng size</label><input type="url" id="chartUrl" value="https://res.cloudinary.com/p8nrkuot/image/upload/v1794772267/bang_quy_doi_kich_co_harin_studios.png" placeholder="https://res.cloudinary.com/..."><div class="chart-note">&#10003; &#7842;nh Cloudinary c&#244;ng khai &#273;&#227; c&#243; URL; t&#7921; &#273;i&#7873;n v&#224;o c&#7897;t O trong Excel, kh&#244;ng c&#7847;n ID b&#7843;ng size.</div></div></div></div></section>
     <section class="panel section"><div class="section-head"><h2>05 · Cloudinary · Tự động tạo URL ảnh</h2></div><div class="section-body">
       <p class="fine" style="margin:0 0 14px">Điền Cloud name và Unsigned upload preset một lần, hoặc khai báo trong Render. Mỗi lần bạn chọn ảnh trên máy, web tự upload và lấy URL HTTPS điền vào Excel. Không cần API Key hoặc API Secret.</p>
       <div class="grid-2"><div class="field"><label for="cloudName">Cloud name</label><input id="cloudName" placeholder="Ví dụ: harin-cloud"></div><div class="field"><label for="cloudPreset">Unsigned upload preset</label><input id="cloudPreset" placeholder="Ví dụ: harin_public"></div></div>

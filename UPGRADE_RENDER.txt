@@ -1,0 +1,15 @@
+HARIN STUDIOS V2 - CAP NHAT RENDER
+
+1. Tai ZIP, giai nen.
+2. Copy cac file tu thu muc harin_render_docker_v2 vao thu muc repo D:\Code\harin_render_docker. Ghi de file cu. KHONG xoa .git.
+3. Mo PowerShell:
+
+cd "D:\Code\harin_render_docker"
+git add .
+git commit -m "Update Harin inventory shipping size selector"
+git push origin main
+
+4. Trong Render, auto deploy se chay neu da bat. Neu chua, Manual Deploy > Deploy latest commit.
+5. Ctrl+Shift+R sau deploy.
+
+SUA DOI: Ton kho/size mac dinh 50 nhung sua duoc moi san pham; cac kenh van chuyen co switch; chon size S/M/L bang dropdown tich nhieu; URL anh bang size Cloudinary duoc dat san, xuat o cot O, cot N bo trong.
