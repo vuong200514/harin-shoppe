@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#fff7f3">
-  <title>Harin Studios V4 · Tạo file Shopee hàng loạt</title>
+  <title>Harin Studios V8 · Thời Trang Nữ · Sửa lỗi vận chuyển</title>
   <style>
     :root{--bg:#faf8f5;--paper:#fff;--ink:#302d2b;--muted:#898581;--line:#eee8e2;--accent:#e66a53;--accent-dark:#d25440;--accent-pale:#fff0eb;--green:#168b65;--green-pale:#e9f8f0;--shadow:0 12px 32px rgba(55,35,27,.05)}
     *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,"Segoe UI",Arial,sans-serif;font-size:14px;line-height:1.48}button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{opacity:.55;cursor:not-allowed}input,select,textarea{outline:0;color:var(--ink)}input:focus,select:focus,textarea:focus{border-color:#ed9c8e!important;box-shadow:0 0 0 3px #edab9930}.hidden{display:none!important}
@@ -28,6 +28,8 @@
   
     .editable-stock{height:38px!important;width:94px!important;border:1px solid #e4d7cd!important;border-radius:9px!important;background:white!important;padding:4px 10px!important;font-size:19px!important;font-weight:800;color:var(--ink);margin-top:4px}
     .stock-note{font-size:10px;color:var(--muted);margin-top:5px}
+    .export-warnings{margin-top:14px;padding:12px 14px;background:#fff6e9;border:1px solid #f2d7aa;border-radius:12px;color:#6c4831;font-size:12px;line-height:1.6}
+    .export-warnings ul{padding-left:17px;margin:7px 0 0}.export-warnings li+li{margin-top:5px}
     .ship-control{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;background:#faf8f5;border-radius:10px;padding:9px 12px;cursor:pointer;font-size:12px;transition:background .15s;border:1px solid transparent}
     .ship-control:has(input:checked){background:#f5fbf8;border-color:#dceee6}.ship-control:hover{border-color:#d8c8bf}
     .ship-control .ship-toggle{width:39px;height:23px;border-radius:99px;background:#c7c3bf;position:relative;flex:none;transition:background .15s}
@@ -66,6 +68,21 @@
     .upload-inline.has-error{border-color:#f0c8b3;background:#fff8f1;color:#ad513b}
     .upload-inline.has-error .fine{color:#9f674d}
     .image-actions{flex-wrap:wrap}.image-actions .wait-dot{overflow-wrap:anywhere;font-size:10px}
+  .auto-template{border:1px solid #e8dfd8;border-radius:13px;padding:15px 17px;background:#fcfaf8;display:grid;gap:7px}
+  .auto-template-label{font-size:11px;color:#80766e;font-weight:750}
+  .auto-template-value{font-size:18px;font-weight:850;color:#2d2825;display:flex;align-items:center;flex-wrap:wrap;gap:10px}
+  .auto-template-fixed{font-size:10px;color:#1c805b;background:#e8f6ee;padding:5px 9px;border-radius:7px;font-weight:750}
+  .auto-template-detail{font-size:12px;color:#695b53;line-height:1.55}
+
+    /* V7: explicit batch photo picker and cover controls. */
+    .upload-cta{display:inline-flex!important;align-items:center;justify-content:center;margin:13px auto 10px;background:var(--accent);color:#fff!important;border-radius:10px;padding:12px 17px;font-size:13px!important;font-weight:800;box-shadow:0 5px 12px #9d4b3025}
+    .upload-box:hover .upload-cta,.upload-box:focus-visible .upload-cta{background:var(--accent-dark)}
+    .upload-box:focus-visible{outline:3px solid #e7ab98;outline-offset:3px}
+    .upload-help{display:block!important;line-height:1.7;margin-top:5px;font-size:11px!important;color:#84756e!important}
+    .photo-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:17px;background:#faf6f3;padding:12px;border:1px solid #eee1d9;border-radius:11px}
+    .photo-toolbar div{display:grid;gap:4px}.photo-toolbar strong{font-size:13px}.photo-toolbar span{font-size:11px;color:var(--muted)}
+    .image-card{position:relative}.image-actions{gap:6px}.image-cover-btn{flex:0 0 100%;padding:6px!important;background:#fff0e8!important;color:#8f4435;font-weight:750;font-size:11px!important}
+    @media(max-width:540px){.photo-toolbar{flex-wrap:wrap}.photo-toolbar .btn{width:100%}}
 </style>
 </head>
 <body>
@@ -80,16 +97,16 @@
     <div class="sidebar-buttons"><button class="btn soft full" id="addProduct">＋ Thêm sản phẩm</button><button class="btn full" id="bulkProducts">☷ Thêm nhiều tên cùng lúc</button></div>
   </div></aside>
   <main class="main">
-    <div class="page-head"><div class="kicker">WORKSPACE / TẠO SẢN PHẨM</div><h1>Đăng bán Shopee thật nhanh.</h1><p>Chỉ cần nhập tên, giá, chọn ngành hàng và ảnh. Những thông tin cố định của shop đã được thiết lập sẵn.</p></div>
+    <div class="page-head"><div class="kicker">WORKSPACE / TẠO SẢN PHẨM</div><h1>Đăng bán Thời Trang Nữ nhanh chóng.</h1><p>Chỉ dành cho Thời Trang Nữ: nhập tên, giá, chọn ngành con và ảnh. Shop đã được thiết lập No Brand và các thông số mặc định.</p></div>
     <section class="panel section"><div class="section-head"><h2>01 · Thông tin sản phẩm</h2><span id="productIndex">Sản phẩm 01</span></div><div class="section-body">
       <div class="field" style="margin-bottom:17px"><label for="itemName">Tên sản phẩm <span style="color:var(--accent)">*</span></label><div class="field-join"><span>𝙝𝙖𝙧𝙞𝙣.𝙨𝙩𝙪𝙙𝙞𝙤𝙨</span><input id="itemName" placeholder="Áo thun nữ form rộng cổ tròn..." maxlength="105"></div><div class="hint">Tên luôn tự có tiền tố 𝙝𝙖𝙧𝙞𝙣.𝙨𝙩𝙪𝙙𝙞𝙤𝙨 phía trước.</div></div>
       <div class="grid-2">
-        <div class="field category-field" id="categoryField"><label for="itemCategory">Ngành hàng Shopee <span style="color:var(--accent)">*</span></label>
-          <div class="category-input-wrap"><span class="category-search-icon" aria-hidden="true">⌕</span><input id="itemCategory" type="search" role="combobox" autocomplete="off" aria-autocomplete="list" aria-controls="categoryResults" aria-expanded="false" placeholder="Gõ nam, áo thun, dien thoai..." spellcheck="false">
+        <div class="field category-field" id="categoryField"><label for="itemCategory">Ngành hàng Thời Trang Nữ <span style="color:var(--accent)">*</span></label>
+          <div class="category-input-wrap"><span class="category-search-icon" aria-hidden="true">⌕</span><input id="itemCategory" type="search" role="combobox" autocomplete="off" aria-autocomplete="list" aria-controls="categoryResults" aria-expanded="false" placeholder="Gõ áo thun, váy, quần, hoodie..." spellcheck="false">
             <div id="categoryResults" class="category-menu hidden" role="listbox" aria-label="Gợi ý ngành hàng Shopee"></div>
           </div>
           <div id="categoryChosen" class="category-chosen" aria-live="polite">Chưa chọn ngành hàng</div>
-          <div class="hint">Gợi ý ngay khi gõ · tìm không dấu · tra cứu <strong id="categoryTotal">1.813</strong> ngành hàng kèm ID từ mẫu Shopee bạn cung cấp.</div>
+          <div class="hint">Gợi ý ngay khi gõ · tìm không dấu · tra cứu <strong id="categoryTotal">76</strong> ngành hàng Thời Trang Nữ kèm ID từ mẫu Shopee bạn cung cấp.</div>
         </div>
         <div class="field"><label for="itemPrice">Giá bán (VNĐ) <span style="color:var(--accent)">*</span></label><input id="itemPrice" type="number" min="1000" max="120000000" step="1000" placeholder="Ví dụ: 129000"></div>
       </div>
@@ -112,12 +129,13 @@
           </div></div><div class="hint">Size &#273;&#432;&#7907;c ch&#7885;n s&#7869; c&#243; d&#7845;u t&#237;ch v&#224; n&#7873;n n&#7893;i b&#7853;t.</div></div>
       <div class="row" style="margin-top:19px;justify-content:flex-end;flex-wrap:wrap"><button class="btn small" id="cloneProduct">⧉ Nhân bản sản phẩm</button><button class="btn small ghost" id="deleteProduct">Xóa sản phẩm này</button></div>
     </div></section>
-    <section class="panel section"><div class="section-head"><h2>02 · Ảnh sản phẩm từ máy</h2><span>Tối đa 9 ảnh / sản phẩm</span></div><div class="section-body">
-      <div class="upload-box" id="imageDrop" role="button" tabindex="0"><div class="upload-emoji">▧</div><strong>Nhấp hoặc kéo ảnh vào đây</strong><span>JPG / PNG / WebP · tự xử lý ảnh quá 2MB · ảnh đầu tiên là ảnh bìa</span></div><input class="hidden" id="imageFile" type="file" accept="image/jpeg,image/png,image/webp" multiple>
+    <section class="panel section"><div class="section-head"><h2>02 · Ảnh sản phẩm từ máy</h2><span id="imageCountHeader">0/9 ảnh / sản phẩm</span></div><div class="section-body">
+      <div class="upload-box" id="imageDrop" role="button" tabindex="0" aria-label="Chọn nhiều ảnh sản phẩm từ máy tính"><div class="upload-emoji">▧</div><strong>Chọn nhiều ảnh trong một lần</strong><span class="upload-cta">＋ Chọn ảnh từ máy (tối đa 9 ảnh)</span><span class="upload-help">Trong cửa sổ chọn file: giữ Ctrl/Shift để chọn nhiều ảnh, hoặc Ctrl+A để chọn tất cả.<br>Kéo thả cùng lúc nhiều ảnh vào khung này cũng được.</span><span class="upload-help">JPG / PNG / WebP · tự nén ảnh lớn · ảnh đầu tiên làm ảnh bìa.</span></div><input class="hidden" id="imageFile" type="file" accept="image/jpeg,image/png,image/webp" multiple aria-label="Chọn nhiều ảnh từ máy">
+      <div class="photo-toolbar hidden" id="photoToolbar"><div><strong id="photoCount">0 / 9 ảnh</strong><span id="photoHelp">Ảnh đầu tiên là ảnh bìa. Có thể đổi ảnh bìa bên dưới.</span></div><button type="button" class="btn small" id="addMorePhotos">＋ Thêm ảnh</button></div>
       <div class="images" id="imageGrid"></div>
       <div class="upload-inline" id="uploadInline" aria-live="polite">
         <div class="upload-status-line"><span id="cloudReadyStatus">☁ Đang kết nối kho ảnh…</span><button type="button" class="btn small soft hidden" id="uploadAll">↻ Tải lại ảnh lỗi</button></div>
-        <div id="uploadProgress" class="fine" role="status">Chọn ảnh ở phía trên, web sẽ tự tải lên Cloudinary và lấy URL HTTPS.</div>
+        <div id="uploadProgress" class="fine" role="status">Chọn nhiều ảnh một lần; web sẽ tự tải chúng lên Cloudinary, giữ thứ tự để điền ảnh bìa và ảnh phụ trong Excel.</div>
       </div>
     </div></section>
     <section class="panel section"><div class="section-head"><h2>03 · Thiết lập shop</h2><span>Giá trị mặc định · có thể chỉnh sửa</span></div><div class="section-body">
@@ -130,7 +148,7 @@
         <label class="ship-control"><span>H&#7887;a t&#7889;c</span><input type="checkbox" data-ship="AD"><span class="ship-state">T&#7854;T</span><span class="ship-toggle" aria-hidden="true"></span></label>
         <label class="ship-control"><span>Trong ng&#224;y</span><input type="checkbox" data-ship="AG"><span class="ship-state">T&#7854;T</span><span class="ship-toggle" aria-hidden="true"></span></label>
         <label class="ship-control"><span>H&#224;ng c&#7891;ng k&#7873;nh</span><input type="checkbox" data-ship="AF" checked><span class="ship-state">B&#7852;T</span><span class="ship-toggle" aria-hidden="true"></span></label>
-      </div><div class="lock-note">♧ Giá cước 16.500đ trong ảnh là giá tham khảo Shopee hiển thị, không nhập cố định vào Excel.</div><div class="lock-note">Không bán đặt trước: để trống ngày chuẩn bị hàng. Không cần nhập bảng ánh xạ thuộc tính.</div>
+      </div><div class="lock-note">♧ Giá cước 16.500đ trong ảnh là giá tham khảo Shopee hiển thị, không nhập cố định vào Excel.</div><div class="lock-note">Không bán đặt trước: để trống ngày chuẩn bị hàng. Không cần nhập bảng ánh xạ thuộc tính. Excel dùng đúng giá trị vận chuyển Bật / Tắt.</div>
     </div></section>
     <section class="panel section"><div class="section-head"><h2>04 · Bảng quy đổi kích cỡ</h2><span>Size S / M / L</span></div><div class="section-body"><div class="size-section">
       <div class="size-visual"><img src="https://res.cloudinary.com/p8nrkuot/image/upload/v1794772267/bang_quy_doi_kich_co_harin_studios.png" alt="Bảng kích cỡ S M L ngực eo mông" id="chartPreview"><button class="btn small full" id="chartDownload" style="margin-top:11px">↓ Tải ảnh bảng size PNG</button></div>
@@ -139,7 +157,7 @@
         <div class="radio-row"><input type="radio" id="chartImage" name="chartMode" value="image" checked><label for="chartImage"><strong>Dùng đúng ảnh bảng S/M/L này</strong><span class="fine" style="display:block">Cần URL ảnh sau khi tải lên.</span></label></div>
       </div>
     </div><div class="grid-2" style="margin-top:14px"><div class="field" id="chartGroupBox" style="display:none"><label for="chartGroup">Bảng có sẵn</label><select id="chartGroup"><option value="top">Áo — ID 1204838133</option><option value="bottom">Quần / Váy — ID 1504827701</option></select></div><div class="field" id="chartUrlBox"><label for="chartUrl">URL ảnh bảng size</label><input type="url" id="chartUrl" value="https://res.cloudinary.com/p8nrkuot/image/upload/v1794772267/bang_quy_doi_kich_co_harin_studios.png" placeholder="https://res.cloudinary.com/..."><div class="chart-note">&#10003; &#7842;nh Cloudinary c&#244;ng khai &#273;&#227; c&#243; URL; t&#7921; &#273;i&#7873;n v&#224;o c&#7897;t O trong Excel, kh&#244;ng c&#7847;n ID b&#7843;ng size.</div></div></div></div></section>
-    <section class="panel section"><div class="section-head"><h2>05 · File xuất ra</h2></div><div class="section-body"><div class="field"><label for="formatType">Mẫu Shopee</label><select id="formatType"><option value="advanced">Mẫu Thời trang nữ 100017 (có cột Thương hiệu)</option><option value="basic">Mẫu cơ bản đa ngành hàng (không có cột Thương hiệu)</option></select></div><div id="basicWarning" class="warning hidden">Mẫu cơ bản cho nhiều ngành hàng không có cột Thương hiệu. Web không thể tự điền No Brand ở mẫu này; bạn có thể cần xác nhận thương hiệu trong Kênh Người Bán. Mẫu nâng cao 100017 chỉ dành cho Thời Trang Nữ.</div><div class="row" style="margin-top:15px;flex-wrap:wrap"><button class="btn primary" id="exportBottom">↓ Tạo file XLSX</button><button class="btn" id="zipBottom">↓ XLSX + ảnh (ZIP)</button></div><div id="exportStatus" class="fine" style="margin-top:10px">File Excel được tạo trên trình duyệt của bạn. Ảnh gửi trực tiếp từ trình duyệt tới Cloudinary, không lưu trên Render. Thiếu URL ảnh sẽ được cảnh báo trước khi xuất.</div></div></section>
+    <section class="panel section"><div class="section-head"><h2>05 · File xuất ra</h2></div><div class="section-body"><div class="auto-template"><div class="auto-template-label">Thương hiệu của shop</div><div class="auto-template-value">No Brand <span class="auto-template-fixed">Cố định, không cần chọn</span></div><div class="auto-template-detail" id="formatSummary" aria-live="polite">Chỉ xuất mẫu nâng cao Thời Trang Nữ 100017. Cố định No Brand.</div></div><div class="export-warnings hidden" id="exportWarnings" role="status" aria-live="polite"></div><div class="row" style="margin-top:15px;flex-wrap:wrap"><button class="btn primary" id="exportBottom">↓ Tạo file XLSX</button><button class="btn" id="zipBottom">↓ XLSX + ảnh (ZIP)</button></div><div id="exportStatus" class="fine" style="margin-top:10px">File Excel được tạo trên trình duyệt của bạn. Ảnh gửi trực tiếp từ trình duyệt tới Cloudinary, không lưu trên Render. Thiếu URL ảnh sẽ được cảnh báo trước khi xuất.</div></div></section>
     <div class="footer-note">Made for harin.studios · Docker / Render · Excel dựa trên biểu mẫu Shopee người dùng cung cấp</div>
   </main>
   <aside class="right">

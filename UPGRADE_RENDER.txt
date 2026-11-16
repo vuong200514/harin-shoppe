@@ -1,13 +1,1 @@
-HARIN STUDIOS V4 — CAP NHAT RENDER
-
-1. Giai nen, copy noi dung thu muc harin_render_docker_v4 vao D:\Code\harin_render_docker (giu .git).
-2. Mo PowerShell:
-   cd "D:\Code\harin_render_docker"
-   git add .
-   git commit -m "Harin V4 auto image upload and size dropdown"
-   git push origin main
-3. Render deploy lai. Ctrl+Shift+R sau khi deploy.
-
-Chon anh o muc 02 -> tu upload Cloudinary -> tu dien URL vao Excel.
-Khong can nhap Cloudinary tren web (preset da mac dinh).
-Neu upload loi, bam Tai lai anh loi ngay muc 02.
+Harin V8: Giai nen, copy tat ca file vao repo GitHub hien co (khong xoa .git). Chay: git add . && git commit -m "Fix Shopee shipping enums and category warnings" && git push origin main. Sau khi Render deploy: Ctrl+Shift+R.

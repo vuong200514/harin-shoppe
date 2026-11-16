@@ -1,18 +1,7 @@
-HARIN STUDIOS V4 - DOCKER + RENDER
-================================
+HARIN STUDIOS V6 - CHI THOI TRANG NU / ADVANCED 100017
 
-1. Sao chep toan bo file vao repo GitHub hien tai (khong xoa thu muc .git).
-2. Git add, commit, push origin main. Render Auto-Deploy neu da bat.
-3. Mo web, dang nhap (neu ACCESS_PASSWORD da bat).
-4. Vao muc 02, chon/keo tha anh tu may: web TU DONG upload toi
-   Cloudinary p8nrkuot (preset harin_unsigned) va luu URL HTTPS.
-5. Moi anh hien "URL" la xong. Neu "LOI", bam "Tai lai anh loi"
-   ngay o muc 02. Khong can muc cloud config tren web.
-6. Xuat Excel Shopee. Khong xuat file hoan chinh khi thieu URL anh.
-
-Dropdown size S/M/L da duoc sua: mo rong ben duoi, khong bi che.
-
-Luu y: Ban co the ghi de Cloud name/preset bang Render Environment.
-Nen bao ve web bang ACCESS_PASSWORD, gioi han upload tren Cloudinary.
-Khong can hoac luu Cloudinary API Secret.
-Xem README.md / UPGRADE_RENDER.txt de biet them.
+1. Sao chep toan bo file vao thu muc Git hien tai, giu nguyen .git
+2. Chay: git add . && git commit -m "Harin V6 women only" && git push origin main
+3. Render tu deploy, Ctrl+Shift+R de lam moi.
+4. Ngay khi chon anh o muc 02, web se tu upload Cloudinary va lay URL.
+5. Chi 76 nganh con Thoi Trang Nu; khong co Basic.
